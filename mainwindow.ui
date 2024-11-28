@@ -17,8 +17,8 @@
    <widget class="QFrame" name="frame_3">
     <property name="geometry">
      <rect>
-      <x>150</x>
-      <y>270</y>
+      <x>460</x>
+      <y>450</y>
       <width>336</width>
       <height>100</height>
      </rect>
@@ -300,6 +300,81 @@ stop</string>
       <double>60.000000000000000</double>
      </property>
     </widget>
+   </widget>
+   <widget class="QTextEdit" name="te_usb1">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>220</y>
+      <width>231</width>
+      <height>301</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_usb1_con">
+    <property name="geometry">
+     <rect>
+      <x>41</x>
+      <y>41</y>
+      <width>82</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>connect</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="cb_usb1">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>170</y>
+      <width>111</width>
+      <height>25</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="bt_usb1_dis">
+    <property name="geometry">
+     <rect>
+      <x>41</x>
+      <y>72</y>
+      <width>82</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>disconnect</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="write">
+    <property name="geometry">
+     <rect>
+      <x>580</x>
+      <y>70</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>write</string>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_2">
+    <property name="geometry">
+     <rect>
+      <x>90</x>
+      <y>140</y>
+      <width>61</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:14pt; font-weight:600; color:#888a85;&quot;&gt;left&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </property>
+    <property name="textFormat">
+     <enum>Qt::RichText</enum>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
