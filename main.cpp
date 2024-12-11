@@ -44,22 +44,36 @@ int main(int argc, char *argv[])
     QTimer *timer = new QTimer(&a);
     QObject::connect(timer, &QTimer::timeout, [&]() {
         qDebug() << "--- Xbox Controller Status ---";
+
+        // Stick
         qDebug() << "Left Stick X Axis:" << gamepad->axisLeftX();
         qDebug() << "Left Stick Y Axis:" << gamepad->axisLeftY();
         qDebug() << "Right Stick X Axis:" << gamepad->axisRightX();
         qDebug() << "Right Stick Y Axis:" << gamepad->axisRightY();
+
+        // face
         qDebug() << "Button A Pressed:" << gamepad->buttonA();
         qDebug() << "Button B Pressed:" << gamepad->buttonB();
         qDebug() << "Button X Pressed:" << gamepad->buttonX();
         qDebug() << "Button Y Pressed:" << gamepad->buttonY();
+
+        // Bumper, trigger
         qDebug() << "Button LB Pressed:" << gamepad->buttonL1();
         qDebug() << "Button RB Pressed:" << gamepad->buttonR1();
         qDebug() << "Left Trigger Pressure:" << gamepad->buttonL2();
         qDebug() << "Right Trigger Pressure:" << gamepad->buttonR2();
+
+        // D-Pad
         qDebug() << "DPad Up Pressed:" << gamepad->buttonUp();
         qDebug() << "DPad Down Pressed:" << gamepad->buttonDown();
         qDebug() << "DPad Left Pressed:" << gamepad->buttonLeft();
         qDebug() << "DPad Right Pressed:" << gamepad->buttonRight();
+
+        // 추가 버튼들 (Start, Select, Guide, L3, R3)
+        qDebug() << "Button Start Pressed:" << gamepad->buttonStart();      //menu
+        qDebug() << "Button Select Pressed:" << gamepad->buttonSelect();    //share
+        qDebug() << "Button Guide Pressed:" << gamepad->buttonGuide();      //xbox indicator
+
         qDebug() << "--------------------------------";
     });
 
