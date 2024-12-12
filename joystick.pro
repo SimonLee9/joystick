@@ -23,12 +23,13 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
-
+    mainwindow.cpp \
+    websocket.cpp
 
 HEADERS += \
     mainwindow.h \
-    common_data.h
+    common_data.h \
+    websocket.h
 
 FORMS += \
     mainwindow.ui

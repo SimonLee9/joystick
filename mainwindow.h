@@ -63,6 +63,7 @@ private slots:
     //websocket
     void client_connected();
     void client_disconnected();
+
     //void recv_message(QString message);
 
     void updateGamepadStatus();

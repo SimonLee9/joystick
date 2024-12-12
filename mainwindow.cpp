@@ -15,29 +15,17 @@ MainWindow::MainWindow(QWidget *parent)
     //ui->setupUi(this);
 
     // websocket server open
-    if(server.listen(QHostAddress::Any, 11338)) // mobile server port + 1
+    //if(server.listen(QHostAddress::Any, 11338)) // mobile server port + 1
+    if(server.listen(QHostAddress::Any, 13359))
     {
         connect(&server, SIGNAL(newConnection()), this, SLOT(client_connected()));
         printf("[JOG] listen\n");
+        qDebug()<< "[JOG] New Connection";
+        qDebug()<< "0000000000000000000";
     }
-
-    //m_slamnavUrl = QUrl("ws://127.0.0.1:12345");
-
-    // WebSocket 관련 슬롯 연결
-    //connect(&m_client, &QWebSocket::client_connected, this, &MainWindow::client_connected);
-    //connect(&m_client, &QWebSocket::client_disconnected, this, &MainWindow::client_disconnected);
-
-    //connect(&m_client, &QWebSocket::connected, this, &MainWindow::connected);
-    //connect(&m_client, &QWebSocket::disconnected, this, &MainWindow::disconnected);
-
-    //connect(&m_client, &QWebSocket::textMessageReceived, this, &MainWindow::recv_message);
-
-    //connectToSlamnav(m_slamnavUrl);
 
     reconnectGamepad();
 
-    connect(m_timer, &QTimer::timeout, this, &MainWindow::updateGamepadStatus);
-    m_timer->start(100);
 
     // 2초 주기로 게임패드 연결 상태 체크
     connect(m_reconnectTimer, &QTimer::timeout, this, &MainWindow::checkGamepadConnection);
@@ -53,13 +41,6 @@ MainWindow::MainWindow(QWidget *parent)
         qDebug() <<"[JOG] joystick CONNECTED";
         int gamepadIndex = manager->connectedGamepads().first();
         m_gamepad = new QGamepad(gamepadIndex, this);
-
-        // QPushButton 인스턴스 (원래 main.cpp에서 있던 F버튼)
-        //QPushButton *bt_JogF = new QPushButton(this);
-        //bt_JogF->setGeometry(50, 10, 41, 41);
-        //bt_JogF->setText("F");
-        //bt_JogF->setAutoRepeat(false);
-        //bt_JogF->setAutoRepeatDelay(100);
 
         connect(m_gamepad, &QGamepad::buttonAChanged, this, [=](bool pressed)
         {
@@ -93,57 +74,32 @@ void MainWindow::connectToSlamnav(const QUrl &url)
 
 void MainWindow::client_connected()
 {
-    //qDebug() << "Connected to slamnav server";
+    qDebug() << "Connected to slamnav server";
     //is_connected = true;
     //연결직후 필요한 초기 통신이 있다면 여기서 수행
 
     QWebSocket *socket = server.nextPendingConnection();
-    //connect(socket, &QWebSocket::textMessageReceived, this, &MainWindow::recv_message);
     connect(socket, &QWebSocket::disconnected, this, &MainWindow::client_disconnected);
+
     client = socket;
     is_connected = true;
 
     printf("[JOG] client connected, ip:%s\n", socket->peerAddress().toString().toLocal8Bit().data());
-
-
 }
-
 void MainWindow::client_disconnected()
 {
-    //qDebug() << "Disconnected from slamnav server!";
+    qDebug() << "Disconnected from slamnav server!";
     //is_connected = false;
     // 재접속 로직을 구현하려면 여기에 추가 가능
 
     is_connected = false;
 
     QWebSocket *socket = qobject_cast<QWebSocket*>(sender());
-//    /disconnect(socket, &QWebSocket::textMessageReceived, this, &MainWindow::recv_message);
     disconnect(socket, &QWebSocket::disconnected, this, &MainWindow::client_disconnected);
     client->deleteLater();
 
     printf("[JOG] client disconnected, ip:%s\n", socket->peerAddress().toString().toLocal8Bit().data());
 }
-
-//void MainWindow::recv_message(QString message)
-//{
-//    qDebug() << "[JOG] Received message from slamnav:" << message;
-//        QJsonDocument doc = QJsonDocument::fromJson(message.toUtf8());
-//        if (doc.isNull()) {
-//            qWarning() << "[JOG] Invalid JSON received";
-//            return;
-//        }
-//
-//        QJsonObject obj = doc.object();
-//        // 필요한 키 추출 예: "command", "result" 등
-//        QString command = get_json(obj, "[JOG] command");
-//        QString result = get_json(obj, "[JOG] result");
-//        qDebug() << "[JOG] Command:" << command << "[JOG] Result:" << result;
-//
-//        // 명령어에 따른 처리 로직 추가 가능
-//        // 예: slamnav가 특정 상태 요청 -> joystick 상태 응답 등
-//
-//}
-
 QString MainWindow::get_json(QJsonObject &json, QString key)
 {
     if (json.contains(key) && json[key].isString()) {
@@ -155,35 +111,32 @@ QString MainWindow::get_json(QJsonObject &json, QString key)
 void MainWindow::updateGamepadStatus()
 {
     //if (!m_gamepad) return;
-    if(!m_gamepad && !is_connected)
-        return;
+    if(m_gamepad && is_connected)
+    //if(is_connected)
+    //if(m_gamepad || is_connected)
+    {
+        // 조이스틱 값 읽기
+        double lx = m_gamepad->axisLeftX();   // 왼스틱 X축
+        double ly = m_gamepad->axisLeftY();   // 왼스틱 Y축
+        double rx = m_gamepad->axisRightX();  // 오른스틱 X축
 
-    //QJsonObject json;
-    //json["AxisLeftX"] = m_gamepad->axisLeftX();
-    //json["AxisLeftY"] = m_gamepad->axisLeftY();
-    //json["AxisRightX"] = m_gamepad->axisRightX();
-    //json["AxisRightY"] = m_gamepad->axisRightY();
-    //json["ButtonA"] = m_gamepad->buttonA();
-    //json["ButtonB"] = m_gamepad->buttonB();
-    //json["ButtonX"] = m_gamepad->buttonX();
-    //json["ButtonY"] = m_gamepad->buttonY();
-    //json["ButtonL1"] = m_gamepad->buttonL1();
-    //json["ButtonR1"] = m_gamepad->buttonR1();
-    //json["ButtonL2"] = m_gamepad->buttonL2();
-    //json["ButtonR2"] = m_gamepad->buttonR2();
-    //json["ButtonUp"] = m_gamepad->buttonUp();
-    //json["ButtonDown"] = m_gamepad->buttonDown();
-    //json["ButtonLeft"] = m_gamepad->buttonLeft();
-    //json["ButtonRight"] = m_gamepad->buttonRight();
-    //json["ButtonStart"] = m_gamepad->buttonStart();
-    //json["ButtonSelect"] = m_gamepad->buttonSelect();
-    //json["ButtonGuide"] = m_gamepad->buttonGuide();
+        // 간단한 스케일링:
+        // 예) 최대 속도를 0.5 m/s, 최대 회전속도를 0.5 rad/s로 가정
+        double max_linear_speed = 0.5;
+        double max_angular_speed = 0.5;
 
-    //QJsonDocument doc(json);
-    //QString message = doc.toJson(QJsonDocument::Compact);
+        double vx = ly * max_linear_speed;  // 전후진
+        double vy = lx * max_linear_speed;  // 좌우 이동
+        double wz = rx * max_angular_speed; // 회전
 
-    //m_client.sendTextMessage(message);
-    //qDebug() << "Sent joystick data to slamnav" << message;
+        // 현재 시간(초 단위) * 1000해서 time 매개변수로 전달
+        double t = get_time0() * 1000.0;
+
+        // slamnav에 jog 명령 전송
+        send_jog_command(vx, vy, wz, t);
+
+    }
+       //return;
 
     /*
     qDebug() << "--- Xbox Controller Status ---";
@@ -218,25 +171,7 @@ void MainWindow::updateGamepadStatus()
 
     qDebug() << "--------------------------------";
     */
-    // 조이스틱 값 읽기
-    double lx = m_gamepad->axisLeftX();   // 왼스틱 X축
-    double ly = m_gamepad->axisLeftY();   // 왼스틱 Y축
-    double rx = m_gamepad->axisRightX();  // 오른스틱 X축
 
-    // 간단한 스케일링:
-    // 예) 최대 속도를 0.5 m/s, 최대 회전속도를 0.5 rad/s로 가정
-    double max_linear_speed = 0.5;
-    double max_angular_speed = 0.5;
-
-    double vx = ly * max_linear_speed;  // 전후진
-    double vy = lx * max_linear_speed;  // 좌우 이동
-    double wz = rx * max_angular_speed; // 회전
-
-    // 현재 시간(초 단위) * 1000해서 time 매개변수로 전달
-    double t = get_time0() * 1000.0;
-
-    // slamnav에 jog 명령 전송
-    send_jog_command(vx, vy, wz, t);
 
 }
 
@@ -244,7 +179,8 @@ void MainWindow::send_jog_command(double vx, double vy, double wz, double time_m
 {
     //qDebug() <<"111111111111111111111111111111111";
     //if (!is_connected) return;
-    if(is_connected)
+    //if(m_gamepad || is_connected)
+    if(m_gamepad && is_connected)
     {
         QJsonObject obj;
         obj["type"] = "move";
@@ -260,11 +196,13 @@ void MainWindow::send_jog_command(double vx, double vy, double wz, double time_m
         //obj["preset"] = QString().sprintf("%d", preset);
         //obj["method"] = "pp";
         //obj["time"] = QString::number((long long)(get_time0()*1000), 10);
+
         printf("[COMM_UI] move, jog, t: %.3f, vel: %.3f, %.3f, %.3f\n", time_ms, vx, vy, wz);
-        std::cout<<"[JOG] tttttttttttttttttttttttt";
-        //qDebug() << "[COMM_UI] move, jog, t: %.3f, vel: %.3f, %.3f, %.3f\n",time_ms, vx, vy, wz ;
-        qDebug() <<"222222222222222222222222222222222222222222";
+        //std::cout<<"[JOG] tttttttttttttttttttttttt";
+        qDebug() << "[COMM_UI] move, jog, t: %.3f, vel: %.3f, %.3f, %.3f\n",time_ms, vx, vy, wz ;
+        //qDebug() <<"222222222222222222222222222222222222222222";
         //QJsonObject json;
+
         QJsonDocument doc(obj);
         QString str(doc.toJson());
         client->sendTextMessage(str);
@@ -313,8 +251,6 @@ void MainWindow::reconnectGamepad()
     }
     int gamepadIndex = manager->connectedGamepads().first();
     m_gamepad = new QGamepad(gamepadIndex, this);
-
-    //connect(m_gamepad, &QGamepad::buttonGuideChanged, this, &MainWindow::onGuideButtonPressed);
 
     qDebug() << "[JOG] joystick reconnected successfully!";
 }
