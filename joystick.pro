@@ -1,4 +1,4 @@
-QT       += core gui gamepad network serialport websockets
+QT       += core gamepad network serialport websockets #gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -31,8 +31,8 @@ HEADERS += \
     common_data.h \
     websocket.h
 
-FORMS += \
-    mainwindow.ui
+#FORMS += \
+#    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

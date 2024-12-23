@@ -56,30 +56,31 @@ public:
 
     void send_joystick_data(); //SLAMCMD_MOVE
 
-    QString get_json(QJsonObject& json, QString key);
 
 private slots:
 
     //websocket
     void client_connected();
     void client_disconnected();
+    void client_reconnection();
 
     //void recv_message(QString message);
 
     void updateGamepadStatus();
     void checkGamepadConnection();
-    void reconnectGamepad(); // Guide 버튼을 눌렀을 때 재연결 시도하는 함수
+    void checkSlamnavConnection();
+    //void reconnectGamepad(); // Guide 버튼을 눌렀을 때 재연결 시도하는 함수
     void onGuideButtonPressed(bool pressed);
     void send_jog_command(double vx, double vy, double wz, double time_ms);
 
-
 private:
 
-    Ui::MainWindow *ui;
+    //Ui::MainWindow *ui;
     //QSerialPort* m_serialPort1 = nullptr;
     QGamepad *m_gamepad;
     QTimer *m_timer;
     QTimer *m_reconnectTimer;
+    QTimer *m_reconnectTimer2;
 
     //WebSocket 통신 객체
     QWebSocketServer server;

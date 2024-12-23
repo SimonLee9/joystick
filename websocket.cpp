@@ -80,7 +80,3 @@ void websocket_ui::send_message()
     }
 
 }
-//QString websocket_ui::get_json(QJsonObject& json, QString key)
-//{
-//    return json[key].toString();
-//}
