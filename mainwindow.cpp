@@ -132,7 +132,7 @@ void MainWindow::updateGamepadStatus()
         // 현재 시간(초 단위) * 1000해서 time 매개변수로 전달
         double t = get_time0() * 1000.0;
 
-        //qDebug()<<"is connected"<<is_connected;
+        qDebug()<<"is connected:"<<is_connected;
 
         //if(m_gamepad->buttonL1() && is_connected)
         //{
@@ -143,6 +143,7 @@ void MainWindow::updateGamepadStatus()
         {
             // slamnav에 jog 명령 전송
             send_jog_command(vx, vy, wz, t);
+            qDebug()<<"is connected222222222222222"<<is_connected;
         }
     }
 
