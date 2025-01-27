@@ -116,71 +116,46 @@ void MainWindow::updateGamepadStatus()
     if(m_gamepad || is_connected)
     {
         // 조이스틱 값 읽기
-        double lx = m_gamepad->axisLeftX();   // 왼스틱 X축
-        double ly = m_gamepad->axisLeftY();   // 왼스틱 Y축
-        double rx = m_gamepad->axisRightX();  // 오른스틱 X축
+        float lx = m_gamepad->axisLeftX();   // 왼스틱 X축
+        float ly = m_gamepad->axisLeftY();   // 왼스틱 Y축
+
+        // Dead zone 설정 (센서 오차 무시)
+        double deadZone = 0.05; // Dead zone 크기 (0~1 범위)
+
+        // Dead zone 적용
+        if (qAbs(lx) < deadZone) lx = 0.0;
+        if (qAbs(ly) < deadZone) ly = 0.0;
 
         // 간단한 스케일링:
         // 예) 최대 속도를 0.5 m/s, 최대 회전속도를 0.5 rad/s로 가정
-        double max_linear_speed = 0.5;
-        double max_angular_speed = 0.5;
+        float max_linear_speed = 0.5;
+        float max_angular_speed = 25.0; //0.5
 
-        double vx = -ly * max_linear_speed;  // 전후진
-        double vy = lx * max_linear_speed;  // 좌우 이동
-        double wz = rx * max_angular_speed; // 회전
+        float vx = -ly * max_linear_speed;  // 전후진
+        float wz = -lx * max_angular_speed;    // 좌/우 회전 속도
 
         // 현재 시간(초 단위) * 1000해서 time 매개변수로 전달
         double t = get_time0() * 1000.0;
 
-        qDebug()<<"is connected:"<<is_connected;
+        //qDebug()<<"is connected:"<<is_connected;
 
-        //if(m_gamepad->buttonL1() && is_connected)
-        //{
-        //    send_jog_command(vx, vy, wz, t);
-        //}
+        qDebug() << "Calculated velocities - vx:" << vx << ", wz:" << wz;
 
         if (is_connected)
         {
-            // slamnav에 jog 명령 전송
-            send_jog_command(vx, vy, wz, t);
-            qDebug()<<"is connected222222222222222"<<is_connected;
+            send_jog_command(vx,0.0, wz, t);
         }
+        else
+        {
+            qDebug() << "Slamnav is not connected";
+        }
+    }
+    else
+    {
+        qDebug() << "Gampad or Slamnav is not connected.";
     }
 
 
-    /*
-    qDebug() << "--- Xbox Controller Status ---";
-    // Stick
-    qDebug() << "Left Stick X Axis:" << m_gamepad->axisLeftX();
-    qDebug() << "Left Stick Y Axis:" << m_gamepad->axisLeftY();
-    qDebug() << "Right Stick X Axis:" << m_gamepad->axisRightX();
-    qDebug() << "Right Stick Y Axis:" << m_gamepad->axisRightY();
-
-    // Face Buttons
-    qDebug() << "Button A Pressed:" << m_gamepad->buttonA();
-    qDebug() << "Button B Pressed:" << m_gamepad->buttonB();
-    qDebug() << "Button X Pressed:" << m_gamepad->buttonX();
-    qDebug() << "Button Y Pressed:" << m_gamepad->buttonY();
-
-    // Bumper, trigger
-    qDebug() << "Button LB Pressed:" << m_gamepad->buttonL1();
-    qDebug() << "Button RB Pressed:" << m_gamepad->buttonR1();
-    qDebug() << "Left Trigger Pressure:" << m_gamepad->buttonL2();
-    qDebug() << "Right Trigger Pressure:" << m_gamepad->buttonR2();
-
-    // D-Pad
-    qDebug() << "DPad Up Pressed:" << m_gamepad->buttonUp();
-    qDebug() << "DPad Down Pressed:" << m_gamepad->buttonDown();
-    qDebug() << "DPad Left Pressed:" << m_gamepad->buttonLeft();
-    qDebug() << "DPad Right Pressed:" << m_gamepad->buttonRight();
-
-    // 추가 버튼들 (Start, Select, Guide, L3, R3)
-    qDebug() << "Button Start Pressed:" << m_gamepad->buttonStart();   // menu
-    qDebug() << "Button Select Pressed:" << m_gamepad->buttonSelect(); // share
-    qDebug() << "Button Guide Pressed:" << m_gamepad->buttonGuide();   // xbox indicator
-
-    qDebug() << "--------------------------------";
-    */
 
 }
 
@@ -192,6 +167,7 @@ void MainWindow::send_jog_command(double vx, double vy, double wz, double time_m
     obj["command"] = "jog";
     obj["vx"] = QString::number(vx);
     obj["vy"] = QString::number(vy);
+    //obj["vy"] = QString::number(0.0); // 차동에서는 0 고정
     obj["wz"] = QString::number(wz);
     obj["time"] = QString::number((long long)(get_time0()*1000), 10);
 
@@ -201,7 +177,8 @@ void MainWindow::send_jog_command(double vx, double vy, double wz, double time_m
     QJsonDocument doc(obj);
     QString str(doc.toJson());
 
-    if (str.size()!=0)
+    //if (str.size()!=0)
+    if (!str.isEmpty() && client)
     {
         client->sendTextMessage(str);
     }
@@ -236,26 +213,6 @@ void MainWindow::checkSlamnavConnection()
     //qDebug() << "[JOG] check slamnavconnection";
 }
 
-//void MainWindow::reconnectGamepad()
-//{
-//    // 기존 m_gamepad 삭제
-//    if (m_gamepad)
-//    {
-//        delete m_gamepad;
-//        m_gamepad = nullptr;
-//    }
-//
-//    QGamepadManager *manager = QGamepadManager::instance();
-//    if (manager->connectedGamepads().isEmpty())
-//    {
-//        qWarning() << "[JOG] joystick No connected! Cannot reconnect.";
-//        return;
-//    }
-//    int gamepadIndex = manager->connectedGamepads().first();
-//    m_gamepad = new QGamepad(gamepadIndex, this);
-//
-//    qDebug() << "[JOG] joystick reconnected successfully!";
-//}
 
 void MainWindow::onGuideButtonPressed(bool pressed)
 {
